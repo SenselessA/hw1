@@ -1,3 +1,6 @@
+# Реализация TTL
+
+```
 package main
 
 import (
@@ -26,3 +29,4 @@ func main() {
 		log.Fatal(err) // сработает этот код
 	}
 }
+```

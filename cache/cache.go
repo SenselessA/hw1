@@ -1,6 +1,9 @@
 package cache
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type Cache struct {
 	memory map[string]interface{}
@@ -12,23 +15,20 @@ func New() Cache {
 	}
 }
 
-func (c Cache) Set(key string, value interface{}) error {
-	_, ok := c.memory[key]
-	if !ok {
-		c.memory[key] = value
-		return nil
-	} else {
-		return errors.New("value already exists")
-	}
+func (c Cache) Set(key string, value interface{}, ttl time.Duration) {
+	c.memory[key] = value
+	go func() {
+		time.Sleep(ttl)
+		delete(c.memory, key)
+	}()
 }
 
-func (c Cache) Get(key string) interface{} {
-	_, ok := c.memory[key]
+func (c Cache) Get(key string) (interface{}, error) {
+	value, ok := c.memory[key]
 	if ok {
-		return c.memory[key]
-	} else {
-		return errors.New("value not found")
+		return value, nil
 	}
+	return value, errors.New("value not found")
 
 }
 
